@@ -1,0 +1,31 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "3030:3030"
+    networks:
+      - app-network
+    depends_on:
+      - database
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  database:
+    image: sqlite:latest
+    container_name: my-sqlite-container
+    volumes:
+      - ./server:/app/server
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
