@@ -54,6 +54,7 @@
     "@feathersjs/transport-commons": "^5.0.8",
     "compression": "^1.7.4",
     "knex": "^2.5.1",
+    "sequelize": "^6.33.0",
     "sqlite3": "^5.1.6",
     "winston": "^3.10.0"
   },

@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import client from './feather.js';
+// import client from './feather.js';
 import './App.css';
 import './style.css';
 import Job from './components/Job/index.js'
 
+import feathers from '@feathersjs/feathers';
+import rest from '@feathersjs/rest-client';
+
+const client = feathers();
+const restClient = rest('http://localhost:3030');
+client.configure(restClient.fetch(window.fetch.bind(window)));
+const jobService = client.service('job');
 
 function App() {
   const [jobs, setJobs] = useState([]);
@@ -16,13 +23,7 @@ function App() {
       // POST request
       console.log("trying")
       // await client.service('job').create(job);
-      await client.service('job').create({
-        id: 1,
-        description: "sil",
-        done: true,
-        date: "sil",
-        time: "sil",
-      });
+      await client.service('job').create(job);
       // update state
       setJobs([...jobs, job]);
     } catch (error) {
