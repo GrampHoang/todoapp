@@ -1,0 +1,7 @@
+.job {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  height: 30px;
+  width: 100%;
+}
