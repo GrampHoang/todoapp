@@ -5,27 +5,14 @@ services:
       context: ./server
     ports:
       - "3030:3030"
-    networks:
-      - app-network
-    depends_on:
-      - database
+    volumes:
+      - sqlite-data:/app/data  # Use a volume for storing SQLite data
 
   client:
     build:
       context: ./client
     ports:
       - "3000:3000"
-    networks:
-      - app-network
 
-  database:
-    image: sqlite:latest
-    container_name: my-sqlite-container
-    volumes:
-      - ./server:/app/server
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+volumes:
+  sqlite-data:  # Define the SQLite data volume

@@ -10,12 +10,9 @@ import rest from '@feathersjs/rest-client';
 const client = feathers();
 const restClient = rest('http://localhost:3030');
 client.configure(restClient.fetch(window.fetch.bind(window)));
-const jobService = client.service('job');
 
 function App() {
   const [jobs, setJobs] = useState([]);
-  // const client = feather
-
   const addJob = async (id) => {  
     try {
       // POST request to create a new job
@@ -29,10 +26,6 @@ function App() {
   };
 
   const markJobAsDone = async(id) => {
-    // const updatedJobs = [...jobs];
-    // updatedJobs[id].done = true;
-    // setJobs(updatedJobs);
-
     try {
       // Send a PATCH request to mark the job as done
       await client.service('job').patch(id, { done: true });
@@ -48,10 +41,6 @@ function App() {
   };
 
   const deleteJob = async (id) => {
-    // const updatedJobs = [...jobs];
-    // updatedJobs.splice(id, 1);
-    // setJobs(updatedJobs);
-
     try {
       // Send a DELETE request to delete the job
       await client.service('job').remove(id);
@@ -79,7 +68,7 @@ function App() {
   
     // Call the fetchJobs function when the component mounts
     fetchJobs();
-  }, []); // The empty array [] means this effect runs once when the component mounts.
+  }, []);
 
   return (
     <div className="main">
