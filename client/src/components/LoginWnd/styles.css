@@ -1,0 +1,32 @@
+.loginWnd{
+    height: 125px;
+    width: 450px;
+    background-color: white;
+    align-items: center;
+    justify-items: center;
+    padding: 20px;
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.headertext{
+  display: block;
+  font-size: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+  /* margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px; */
+  font-weight: bold;
+}
+
+.loginBtn{
+    margin-left: 50px;
+    width: 75px;
+    height: 30px;
+}

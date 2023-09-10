@@ -7,12 +7,19 @@ import Job from './components/Job/index.js'
 import feathers from '@feathersjs/feathers';
 import rest from '@feathersjs/rest-client';
 
+import LoginWnd from './components/LoginWnd';
+
+// import firebase from './firebase';
+// import 'firebase/auth';
+
 const client = feathers();
 const restClient = rest('http://localhost:3030');
 client.configure(restClient.fetch(window.fetch.bind(window)));
 
 function App() {
+  const [user, setUser] = useState([]);
   const [jobs, setJobs] = useState([]);
+
   const addJob = async (id) => {  
     try {
       // POST request to create a new job
@@ -53,6 +60,14 @@ function App() {
     }
   };
 
+  const [isLoginVisible, setIsLoginVisible] = useState(false);
+  const openLoginWindow = () => {
+    setIsLoginVisible(true);
+  };
+  const closeLoginWindow = () => {
+    setIsLoginVisible(false);
+  };
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -73,7 +88,18 @@ function App() {
   return (
     <div className="main">
     <div className="container">
-    <h2 className="header">Simple Todo Application</h2>
+    <div className='App-header'>
+      <h2 className="header">Simple Todo Application</h2>
+      <div className="autharea">
+        <h2 className="header">Hello Guest</h2>
+        <button className="authbtn" onClick={openLoginWindow}>Sign in</button>
+        {isLoginVisible && (
+          <div className="overlay">
+            <LoginWnd onClose={closeLoginWindow} />
+          </div>
+        )}
+      </div>
+    </div>
     <Job onAddJob={addJob} />
     <div class="empty_space"></div>
     {jobs.map((job) => (

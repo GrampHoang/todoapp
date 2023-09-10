@@ -14,14 +14,33 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.autharea{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* height: 30px; */
+  width: auto;
+  align-self: center;
+
+  /* display: block; */
+  /* font-size: 12px; */
+  /* margin-block-start: 0.83em;
+  margin-block-end: 0.83em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px; */
+  font-weight: bold;
+}
+
+.authbtn{
+  margin-left: 50px;
+  height: 30px;
+  width: 150px;
+  align-self: center;
 }
 
 .App-link {
@@ -35,4 +54,17 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above other content */
 }
