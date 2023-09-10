@@ -101,7 +101,7 @@ function App() {
       </div>
     </div>
     <Job onAddJob={addJob} />
-    <div class="empty_space"></div>
+    <div className="empty_space"></div>
     {jobs.map((job) => (
         <div key={job.id} className={`job-item${job.done ? '-done' : ''}`}>
           <div className="job-buttons">

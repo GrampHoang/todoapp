@@ -30,7 +30,7 @@ function Job({ onAddJob }) {
   };
 
   return (
-    <div className="job" class="job">
+    <div className="job">
         {/* <label>Description:</label> */}
         <input
           type="text"

@@ -1,7 +1,7 @@
 .loginWnd{
     height: 160px;
     width: 90%;
-    max-height: 190px;
+    max-height: 160px;
     max-width: 450px;
     min-width: 200px;
     background-color: white;
@@ -33,13 +33,6 @@
   font-weight: bold;
 }
 
-.btnArea{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .loginBtn{
     align-self: end;
     justify-self: self-end;
@@ -52,15 +45,7 @@
 
 .signupBtn{
     margin-top: 10px;
+    margin-left: 20%;
     width: 75px;
     height: 30px;
-}
-
-.askacc{
-    margin-top: 8px;
-    margin-left: 30%;
-    align-self: center;
-    font-size: 14px;
-    font-style: italic;
-    font-weight: bold;
 }

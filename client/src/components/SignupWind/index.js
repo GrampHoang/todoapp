@@ -1,32 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import firebase from '../../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, getAuth  } from "firebase/auth";
 import './styles.css';
 import 'firebase/auth';
 
-const LoginWnd = ({ onClose }) => {
+const SignupWnd = ({ onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false); // Add this state
-
-  const toSignUp = () => {
-    setIsSignUp(true);
-    const logWnd = document.getElementsByClassName('loginWnd')[0];
-    const logContent = document.getElementsByClassName('loginContent')[0];
-    const reconfirm = document.getElementsByClassName('passAgain')[0];
-    logWnd.style.height = "195px"
-    logContent.style.height = "155px"
-    reconfirm.style.visibility = 'visible';
-  };
-
-  const toLogin = () => {
-    setIsSignUp(false);
-    const logWnd = document.getElementsByClassName('loginWnd')[0];
-    const logContent = document.getElementsByClassName('loginContent')[0];
-    const reconfirm = document.getElementsByClassName('passAgain')[0];
-    logWnd.style.height = "160px"
-    logContent.style.height = "120px"
-    reconfirm.style.visibility = 'hidden';
-  };
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,15 +56,11 @@ const LoginWnd = ({ onClose }) => {
    
   // };
 
-  useEffect(() => {
-    toLogin()
-  }, []);
-
   return (
-    <div className={`loginWnd ${isVisible ? 'visible' : 'hidden'}`}>
+    <div className={`SignupWnd ${isVisible ? 'visible' : 'hidden'}`}>
       <div className="loginContent">
         <div className='header'>
-          <div className='headertext'>{isSignUp ? 'Sign Up' : 'Login'}</div>
+          <div className='headertext'>Login</div>
           <button onClick={() => onClose()}>Close</button>
         </div>
         {/* Add login form fields */}
@@ -107,8 +82,6 @@ const LoginWnd = ({ onClose }) => {
         />
 
         <input
-          className='passAgain'
-          visibility="hidden"
           type={"password"}
           placeholder="Your password, again"
           style={{ height: '30px', width: "70%"}}
@@ -121,13 +94,10 @@ const LoginWnd = ({ onClose }) => {
         
         
       </div>
-      <div className="btnArea">
-        <button className="loginBtn" onClick={toLogin}>{isSignUp ? 'Sign Up' : 'Login'}</button>
-        <div className="askacc">{isSignUp ? `Have an account?` : `Don't have account yet?`}</div>
-        <button className="signupBtn" onClick={toSignUp}>{isSignUp ? 'Login' : 'Sign Up'}</button>
-      </div>
+        <button className="signupBtn" onClick={signInWithGoogle}>Sign Up</button>
+        <button className="loginBtn" onClick={signInWithGoogle}>To Login Page</button>
     </div>
   );
 };
 
-export default LoginWnd;
+export default SignupWnd;
