@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import firebase from '../../firebase';
-import { signInWithEmailAndPassword, onAuthStateChanged, getAuth  } from "firebase/auth";
+import authenthication from '../../auth/firebase';
+import { signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword  } from "firebase/auth";
 import './styles.css';
-import 'firebase/auth';
 
 const LoginWnd = ({ onClose }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const isVisible = false;
   const [isSignUp, setIsSignUp] = useState(false); // Add this state
 
   const toSignUp = () => {
@@ -30,42 +29,20 @@ const LoginWnd = ({ onClose }) => {
     setLoginError("");
   };
 
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState('');
 
-  const signInWithGoogle = async () => {
-    // const provider = new firebase.auth.GoogleAuthProvider();
-    // try {
-    //   await firebase.auth().signInWithPopup(provider);
-    //   // User is signed in, you can handle this event
-    // } catch (error) {
-    //   console.error('Error signing in:', error);
-    // }
-    try {
-      if (email !== '' && password !== '') {
-        await signInWithEmailAndPassword(firebase, email, password);
-        onAuthStateChanged(firebase, (user) => {
-          if (user) {
-            console.log('Loggin in as:',user.email)
-            // AsyncStorage.setItem('@user', user.email);
-          }
-       });
-      }
-    } catch (error) {
-      console.log("Email hoặc mật khẩu chưa chính xác");
-      setLoginError("Email hoặc mật khẩu chưa chính xác");
-    }
-
-  };
-
   const handleLogin = async () => {
     try {
       if (email !== '' && password !== '') {
-        await signInWithEmailAndPassword(firebase, email, password);
-        onAuthStateChanged(firebase, (user) => {
-          if (user) {
-            console.log('Loggin in as:',user.email)
+        console.log(authenthication);
+        await signInWithEmailAndPassword(authenthication, email, password);
+        onAuthStateChanged(authenthication, (userCredential) => {
+          if (userCredential) {
+            console.log('Loggin in as:',userCredential.email)
+            console.log(userCredential.user)
             // AsyncStorage.setItem('@user', user.email);
           }
        });
@@ -75,27 +52,36 @@ const LoginWnd = ({ onClose }) => {
       }
     } catch (error) {
       setLoginError("Email or password incorrect");
+      console.error(error);
     }
   };
 
   const handleSignup = async () => {
-    try {
+    try{
       if (email !== '' && password !== '') {
-        await signInWithEmailAndPassword(firebase, email, password);
-        onAuthStateChanged(firebase, (user) => {
-          if (user) {
-            console.log('Loggin in as:',user.email)
-            // AsyncStorage.setItem('@user', user.email);
-          }
-       });
-       onClose();
-      } else {
-        setLoginError("Please fill out the fields");
+        await createUserWithEmailAndPassword(authenthication, email, password).then(() => {
+          console.log('User account created & signed in!');
+          // postData(username) Sync user data here, or pop up and ask if you want to sycn or not
+        })
       }
-    } catch (error) {
-      setLoginError("Email or password incorrect");
     }
-  };
+      catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+          setLoginError('Email already in use!');
+        }
+        else if (error.code === 'auth/invalid-email') {
+          setLoginError('Invalid Email!');
+        }
+        else if (error.code === 'auth/weak-password') {
+          setLoginError('Password too weak!');
+        }
+        else {
+          setLoginError("Unkown Error");
+        }
+        console.error(error);
+        
+    }
+  }
 
   useEffect(() => {
     toLogin()
