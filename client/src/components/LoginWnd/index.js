@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import authenthication from '../../auth/firebase';
-import { signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword  } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword, getAuth  } from "firebase/auth";
 import './styles.css';
+
+const auth = getAuth();
 
 const LoginWnd = ({ onClose }) => {
   const isVisible = false;
@@ -32,14 +34,15 @@ const LoginWnd = ({ onClose }) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [loginError, setLoginError] = useState('');
 
   const handleLogin = async () => {
     try {
       if (email !== '' && password !== '') {
         console.log(authenthication);
-        await signInWithEmailAndPassword(authenthication, email, password);
-        onAuthStateChanged(authenthication, (userCredential) => {
+        await signInWithEmailAndPassword(auth, email, password);
+        onAuthStateChanged(auth, (userCredential) => {
           if (userCredential) {
             console.log('Loggin in as:',userCredential.email)
             console.log(userCredential.user)
@@ -57,10 +60,15 @@ const LoginWnd = ({ onClose }) => {
   };
 
   const handleSignup = async () => {
+    if (password !== password2){
+      setLoginError("Password not match");
+      return;
+    }
     try{
       if (email !== '' && password !== '') {
-        await createUserWithEmailAndPassword(authenthication, email, password).then(() => {
-          console.log('User account created & signed in!');
+        await createUserWithEmailAndPassword(auth, email, password).then(() => {
+        handleLogin();
+        console.log('User account created & signed in!');
           // postData(username) Sync user data here, or pop up and ask if you want to sycn or not
         })
       }
@@ -82,6 +90,22 @@ const LoginWnd = ({ onClose }) => {
         
     }
   }
+
+  // const handleSignup = async () => {
+  //   createUserWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       // Signed in 
+  //       console.log('User account created & signed in!');
+  //       const user = userCredential.user;
+  //       // ...
+  //     })
+  //     .catch((error) => {
+  //       const errorCode = error.code;
+  //       const errorMessage = error.message;
+  //       console.error(error);
+  //       // ..
+  //     });
+  // }
 
   useEffect(() => {
     toLogin()
@@ -105,6 +129,7 @@ const LoginWnd = ({ onClose }) => {
         />
 
         <input
+        className='password'
           type={"password"}
           placeholder="Your password"
           style={{ height: '30px', width: "70%"}}
@@ -119,7 +144,7 @@ const LoginWnd = ({ onClose }) => {
           type={"password"}
           placeholder="Confirm your password"
           style={{ height: '30px', width: "70%"}}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword2(e.target.value)}
           autoCapitalize="none"
         />
 
