@@ -16,6 +16,7 @@ const LoginWnd = ({ onClose }) => {
     logWnd.style.height = "195px"
     logContent.style.height = "155px"
     reconfirm.style.visibility = 'visible';
+    setLoginError("");
   };
 
   const toLogin = () => {
@@ -26,6 +27,7 @@ const LoginWnd = ({ onClose }) => {
     logWnd.style.height = "160px"
     logContent.style.height = "120px"
     reconfirm.style.visibility = 'hidden';
+    setLoginError("");
   };
 
   const [email, setEmail] = useState("");
@@ -57,25 +59,43 @@ const LoginWnd = ({ onClose }) => {
 
   };
 
-  // const handleLogin = async () => {
-  //   try {
-  //     if (email !== '' && password !== '') {
-  //       await signInWithEmailAndPassword(firebase, email, password);
-  //       onAuthStateChanged(firebase, (user) => {
-  //         if (user) {
-  //           console.log('Loggin in as:',user.email)
-  //           AsyncStorage.setItem('@user', user.email);
-  //         }
-  //      });
-  //      onClose();
-  //     } else {
-  //       setLoginError("Please fill out the fields");
-  //     }
-  //   } catch (error) {
-  //     setLoginError("Email or password incorrect");
-  //   }
-   
-  // };
+  const handleLogin = async () => {
+    try {
+      if (email !== '' && password !== '') {
+        await signInWithEmailAndPassword(firebase, email, password);
+        onAuthStateChanged(firebase, (user) => {
+          if (user) {
+            console.log('Loggin in as:',user.email)
+            // AsyncStorage.setItem('@user', user.email);
+          }
+       });
+       onClose();
+      } else {
+        setLoginError("Please fill out the fields");
+      }
+    } catch (error) {
+      setLoginError("Email or password incorrect");
+    }
+  };
+
+  const handleSignup = async () => {
+    try {
+      if (email !== '' && password !== '') {
+        await signInWithEmailAndPassword(firebase, email, password);
+        onAuthStateChanged(firebase, (user) => {
+          if (user) {
+            console.log('Loggin in as:',user.email)
+            // AsyncStorage.setItem('@user', user.email);
+          }
+       });
+       onClose();
+      } else {
+        setLoginError("Please fill out the fields");
+      }
+    } catch (error) {
+      setLoginError("Email or password incorrect");
+    }
+  };
 
   useEffect(() => {
     toLogin()
@@ -86,6 +106,7 @@ const LoginWnd = ({ onClose }) => {
       <div className="loginContent">
         <div className='header'>
           <div className='headertext'>{isSignUp ? 'Sign Up' : 'Login'}</div>
+          <div className='errortext'>{loginError}</div>
           <button onClick={() => onClose()}>Close</button>
         </div>
         {/* Add login form fields */}
@@ -110,10 +131,9 @@ const LoginWnd = ({ onClose }) => {
           className='passAgain'
           visibility="hidden"
           type={"password"}
-          placeholder="Your password, again"
+          placeholder="Confirm your password"
           style={{ height: '30px', width: "70%"}}
           onChange={(e) => setPassword(e.target.value)}
-          // onChange={password => setPassword(password)}
           autoCapitalize="none"
         />
 
@@ -122,9 +142,11 @@ const LoginWnd = ({ onClose }) => {
         
       </div>
       <div className="btnArea">
-        <button className="loginBtn" onClick={toLogin}>{isSignUp ? 'Sign Up' : 'Login'}</button>
+        <button className="loginBtn" onClick={isSignUp ? handleSignup : handleLogin}>
+                                            {isSignUp ? 'Sign Up' : 'Login'}</button>
         <div className="askacc">{isSignUp ? `Have an account?` : `Don't have account yet?`}</div>
-        <button className="signupBtn" onClick={toSignUp}>{isSignUp ? 'Login' : 'Sign Up'}</button>
+        <button className="signupBtn" onClick={isSignUp ? toLogin : toSignUp}>
+                                            {isSignUp ? 'To Login' : 'To Sign Up'}</button>
       </div>
     </div>
   );
