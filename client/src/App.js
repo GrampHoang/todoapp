@@ -7,9 +7,8 @@ import feathers from '@feathersjs/feathers';
 import rest from '@feathersjs/rest-client';
 
 import LoginWnd from './components/LoginWnd';
-
-import firebase, { authenthication } from './auth/firebase';
-// import 'firebase/auth';
+import { authenthication, db } from './auth/firebase';
+import { collection, addDoc, getDocs, getDoc, setDoc, doc, addCollection } from 'firebase/firestore';
 
 const client = feathers();
 const restClient = rest('http://localhost:3030');
@@ -18,14 +17,29 @@ client.configure(restClient.fetch(window.fetch.bind(window)));
 function App() {
   const [user, setUser] = useState([]);
   const [jobs, setJobs] = useState([]);
-
+  
   const addJob = async (id) => {
+    const desc = id.description;
     try {
-      // POST request to create a new job
-      const newJob = await client.service('job').create(id);
-      
-      // Update the local state to include the newly created job
-      setJobs([...jobs, newJob]);
+      if (user) {
+        try {
+          const currentDate = new Date();
+          const docRef = await addDoc(collection(db, user.uid), {
+            description: desc,
+            done: false,
+            date: currentDate.toLocaleDateString(),
+            time: currentDate.toLocaleTimeString(),
+          });
+          console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+      } else {
+        // POST request to create a new job
+        const newJob = await client.service('job').create(id);
+        // Update the local state to include the newly created job
+        setJobs([...jobs, newJob]);
+      }
     } catch (error) {
       console.error('Error adding job:', error);
     }
@@ -144,7 +158,6 @@ function App() {
           </div>
         </div>
       ))}
-
     </div>
   </div>
   );
