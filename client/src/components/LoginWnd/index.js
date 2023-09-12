@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import authenthication from '../../auth/firebase';
+import firebase from '../../auth/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword, getAuth  } from "firebase/auth";
 import './styles.css';
 
-const auth = getAuth();
+const auth = getAuth()
 
 const LoginWnd = ({ onClose }) => {
   const isVisible = false;
@@ -40,12 +40,11 @@ const LoginWnd = ({ onClose }) => {
   const handleLogin = async () => {
     try {
       if (email !== '' && password !== '') {
-        console.log(authenthication);
         await signInWithEmailAndPassword(auth, email, password);
         onAuthStateChanged(auth, (userCredential) => {
           if (userCredential) {
             console.log('Loggin in as:',userCredential.email)
-            console.log(userCredential.user)
+            // console.log(userCredential.user)
             // AsyncStorage.setItem('@user', user.email);
           }
        });
@@ -90,22 +89,6 @@ const LoginWnd = ({ onClose }) => {
         
     }
   }
-
-  // const handleSignup = async () => {
-  //   createUserWithEmailAndPassword(auth, email, password)
-  //     .then((userCredential) => {
-  //       // Signed in 
-  //       console.log('User account created & signed in!');
-  //       const user = userCredential.user;
-  //       // ...
-  //     })
-  //     .catch((error) => {
-  //       const errorCode = error.code;
-  //       const errorMessage = error.message;
-  //       console.error(error);
-  //       // ..
-  //     });
-  // }
 
   useEffect(() => {
     toLogin()

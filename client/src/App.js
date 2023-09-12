@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import client from './feather.js';
 import './App.css';
 import './style.css';
 import Job from './components/Job/index.js'
@@ -9,7 +8,7 @@ import rest from '@feathersjs/rest-client';
 
 import LoginWnd from './components/LoginWnd';
 
-// import firebase from './firebase';
+import firebase, { authenthication } from './auth/firebase';
 // import 'firebase/auth';
 
 const client = feathers();
@@ -20,7 +19,7 @@ function App() {
   const [user, setUser] = useState([]);
   const [jobs, setJobs] = useState([]);
 
-  const addJob = async (id) => {  
+  const addJob = async (id) => {
     try {
       // POST request to create a new job
       const newJob = await client.service('job').create(id);
@@ -60,6 +59,16 @@ function App() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await authenthication.signOut();
+      setUser(null);
+      window.location.reload();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   const [isLoginVisible, setIsLoginVisible] = useState(false);
   const openLoginWindow = () => {
     setIsLoginVisible(true);
@@ -80,9 +89,21 @@ function App() {
         console.error('Error fetching jobs:', error);
       }
     };
-  
+
+    const unsubscribe = authenthication.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        // User is signed in
+        setUser(authUser);
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+    });
+    setUser(null);
     // Call the fetchJobs function when the component mounts
     fetchJobs();
+    // Clean up the listener when the component unmounts
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -91,8 +112,13 @@ function App() {
     <div className='App-header'>
       <h2 className="header">Simple Todo Application</h2>
       <div className="autharea">
-        <h2 className="header">Hello Guest</h2>
+        <h2 className="header">Hello {user === null ? "Guest" : (user.email ? user.email.split('@')[0] : "Guest")}</h2>
+        {/* <button className="authbtn" onClick={openLoginWindow}>Sign in</button> */}
+        {(user == null) ? 
         <button className="authbtn" onClick={openLoginWindow}>Sign in</button>
+        :
+        <button className="authbtn" onClick={handleSignOut}>Sign Out</button>
+        }
         {isLoginVisible && (
           <div className="overlay">
             <LoginWnd onClose={closeLoginWindow} />
