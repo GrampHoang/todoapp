@@ -13,36 +13,5 @@
     "client": "sqlite3",
     "connection": "server.sqlite",
     "useNullAsDefault": true
-  },
-  "authentication": {
-    "entity": "user",
-    "service": "users",
-    "secret": "wNm1MvBpaTEOI3rY2J00k02ypZYcy3KW",
-    "authStrategies": [
-      "jwt",
-      "local"
-    ],
-    "jwtOptions": {
-      "header": {
-        "typ": "access"
-      },
-      "audience": "https://yourdomain.com",
-      "algorithm": "HS256",
-      "expiresIn": "1d"
-    },
-    "local": {
-      "usernameField": "email",
-      "passwordField": "password"
-    },
-    "oauth": {
-      "google": {
-        "key": "<Client ID>",
-        "secret": "<Client secret>"
-      },
-      "auth0": {
-        "key": "<Client ID>",
-        "secret": "<Client secret>"
-      }
-    }
   }
 }
