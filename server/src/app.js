@@ -16,6 +16,8 @@ import { logger } from './logger.js'
 import { logError } from './hooks/log-error.js'
 import { sqlite } from './sqlite.js'
 
+import { authentication } from './authentication.js'
+
 import { services } from './services/index.js'
 import { channels } from './channels.js'
 
@@ -39,6 +41,8 @@ app.configure(
   })
 )
 app.configure(sqlite)
+
+app.configure(authentication)
 
 app.configure(services)
 app.configure(channels)
