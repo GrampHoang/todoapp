@@ -49,6 +49,7 @@ const LoginWnd = ({ onClose }) => {
           }
        });
        onClose();
+       window.location.reload();
       } else {
         setLoginError("Please fill out the fields");
       }

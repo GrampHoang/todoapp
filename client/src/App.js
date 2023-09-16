@@ -7,39 +7,38 @@ import feathers from '@feathersjs/feathers';
 import rest from '@feathersjs/rest-client';
 
 import LoginWnd from './components/LoginWnd';
-import { authenthication, db } from './auth/firebase';
-import { collection, addDoc, getDocs, getDoc, setDoc, doc, addCollection } from 'firebase/firestore';
+import firebase, { authenthication, db } from './auth/firebase';
+import { collection, addDoc, getDoc, getDocs, setDoc, doc, query, deleteDoc } from 'firebase/firestore';
 
 const client = feathers();
 const restClient = rest('http://localhost:3030');
 client.configure(restClient.fetch(window.fetch.bind(window)));
 
 function App() {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState(null);
   const [jobs, setJobs] = useState([]);
   
-  const addJob = async (id) => {
-    const desc = id.description;
+  const addJob = async (job) => {
+    const desc = job.description;
     try {
       if (user) {
         try {
           const currentDate = new Date();
-          const docRef = await addDoc(collection(db, user.uid), {
-            description: desc,
-            done: false,
-            date: currentDate.toLocaleDateString(),
-            time: currentDate.toLocaleTimeString(),
-          });
-          console.log("Document written with ID: ", docRef.id);
+          const docRef = await addDoc(collection(db, user.uid), job);
+          // console.log("Document written with ID: ", docRef.id);
+          job.id = docRef.id;
         } catch (e) {
           console.error("Error adding document: ", e);
         }
+        setJobs([...jobs, job]);
       } else {
         // POST request to create a new job
-        const newJob = await client.service('job').create(id);
+        const newJob = await client.service('job').create(job);
+        // console.log(newJob);
         // Update the local state to include the newly created job
         setJobs([...jobs, newJob]);
       }
+      
     } catch (error) {
       console.error('Error adding job:', error);
     }
@@ -47,14 +46,27 @@ function App() {
 
   const markJobAsDone = async(id) => {
     try {
+      if (user) {
+        try {
+          const docRef = doc(db, user.uid, id);
+          const docSnap = await getDoc(docRef);
+          const updatedData = {
+            ...docSnap.data(),
+            done: true,
+          };
+          await setDoc(docRef, updatedData);
+        } catch (e) {
+          console.error("Error changing document: ", e);
+        }
+      } else {
       // Send a PATCH request to mark the job as done
-      await client.service('job').patch(id, { done: true });
-  
+        await client.service('job').patch(id, { done: true });
+      }
       // Update the local state to reflect the change
       const updatedJobs = jobs.map((job) =>
-        job.id === id ? { ...job, done: true } : job
-      );
-      setJobs(updatedJobs);
+      job.id === id ? { ...job, done: true } : job
+    );
+    setJobs(updatedJobs);
     } catch (error) {
       console.error('Error marking job as done:', error);
     }
@@ -62,9 +74,17 @@ function App() {
 
   const deleteJob = async (id) => {
     try {
+      if (user) {
+        try {
+          const docRef = doc(db, user.uid, id);
+          await deleteDoc(docRef);
+        } catch (e) {
+          console.error("Error deleting document: ", e);
+        }
+      } else {
       // Send a DELETE request to delete the job
-      await client.service('job').remove(id);
-  
+        await client.service('job').remove(id);
+      }
       // Update the local state to remove the deleted job
       const updatedJobs = jobs.filter((job) => job.id !== id);
       setJobs(updatedJobs);
@@ -92,33 +112,56 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        // Send a GET request to fetch the list of jobs
-        const response = await client.service('job').find();
-  
-        // Set the fetched jobs in the state
-        setJobs(response.data);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-      }
-    };
-
-    const unsubscribe = authenthication.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        // User is signed in
-        setUser(authUser);
+    const unsubscribe = authenthication.onAuthStateChanged( async (authUser) => {
+      const user = await authenthication.currentUser;
+      if (user) {
+        setUser(user);
       } else {
-        // User is signed out
         setUser(null);
       }
+      console.log(user)
+      await fetchJobs(user);
+    }, (error) => {
+      console.error('Firebase Authentication Error:', error);
     });
-    setUser(null);
-    // Call the fetchJobs function when the component mounts
-    fetchJobs();
+    // setUser(null);
+    // console.log(user)
+    // fetchJobs();
     // Clean up the listener when the component unmounts
     return () => unsubscribe();
   }, []);
+
+  const fetchJobs = async (user) => {
+    try {
+      if (user) {
+        try {
+          // const docRef = collection(db, user.uid);
+          // const docSnap = docRef.data;
+          // console.log(docRef);
+          const docQue = query(collection(db, user.uid));
+          const queSnap = await getDocs(docQue);
+          const jobDataArray = [];
+          queSnap.forEach((doc) => {
+              jobDataArray.push({ id: doc.id, ...doc.data() });
+            });
+          console.log(jobDataArray);
+          setJobs(jobDataArray);
+        } catch (e) {
+          console.error("Error changing document: ", e);
+        }
+      }
+      else{
+        // Send a GET request to fetch the list of jobs
+        const response = await client.service('job').find();
+        console.log(response.data);
+        setJobs(response.data);
+        
+      }
+      // Set the fetched jobs in the state
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
 
   return (
     <div className="main">
